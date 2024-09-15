@@ -10,9 +10,8 @@
   "private": true,
   "scripts": {
     "build": "bun run --filter '*' build",
-    "pack": "npm pack --workspaces",
     "publish": "npm publish --workspaces",
     "check": "bunx biome check --write .",
-    "test": "bun test"
+    "test": "bun run --filter '*' test"
   }
 }

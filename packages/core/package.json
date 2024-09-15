@@ -14,7 +14,8 @@
     }
   },
   "scripts": {
-    "build": "bun build ./src/index.ts --outdir ./dist --format esm --minify"
+    "build": "bun build ./src/index.ts --outdir ./dist --format esm --minify",
+    "test": "bun test"
   },
   "devDependencies": {},
   "peerDependencies": {},
