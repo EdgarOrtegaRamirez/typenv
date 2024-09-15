@@ -8,10 +8,13 @@
   },
   "exports": {
     ".": {
-      "import": "./src/index.ts",
+      "import": "./dist/index.ts",
       "require": "./dist/index.js",
       "types": "./src/index.ts"
     }
+  },
+  "scripts": {
+    "build": "bun build ./src/index.ts --outdir ./dist --format esm --minify"
   },
   "devDependencies": {},
   "peerDependencies": {},
