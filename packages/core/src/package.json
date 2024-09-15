@@ -1,0 +1,14 @@
+{
+  "name": "typenv",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./src/index.ts",
+      "require": "./dist/index.js",
+      "types": "./src/index.ts"
+    }
+  },
+  "devDependencies": {},
+  "peerDependencies": {},
+  "private": true
+}
