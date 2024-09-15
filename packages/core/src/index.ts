@@ -10,15 +10,18 @@ export class TypenvError extends Error {
    */
   constructor({ message, key }: { message: string; key: string }) {
     super(`Env var ${key} ${message}`);
-    this.name = new.target.name;
+    this.name = 'TypenvError';
   }
 }
 
-type SchemaFunction<VALUE, RETURN> = (input: { key: string, value: VALUE }) => RETURN
-type StringSchema = SchemaFunction<string, string>
-type BooleanSchema = SchemaFunction<string, boolean>
-type NumberSchema = SchemaFunction<string, number>
-type EnumSchema<T> = SchemaFunction<T, T>
+type SchemaFunction<VALUE, RETURN> = (input: {
+  key: string;
+  value: VALUE;
+}) => RETURN;
+type StringSchema = SchemaFunction<string, string>;
+type BooleanSchema = SchemaFunction<string, boolean>;
+type NumberSchema = SchemaFunction<string, number>;
+type EnumSchema<T> = SchemaFunction<T, T>;
 
 /**
  * Validates and returns a string environment variable.
@@ -110,7 +113,9 @@ type TypedEnv<SCHEMA> = SCHEMA extends Record<string, unknown>
  * @returns {TypedEnv<SCHEMA>} An object containing the validated environment variables.
  * @throws {TypenvError} If any environment variable is not defined or invalid.
  */
-export const createEnv = <SCHEMA extends Schema>(schema: SCHEMA): Readonly<TypedEnv<SCHEMA>> => {
+export const createEnv = <SCHEMA extends Schema>(
+  schema: SCHEMA,
+): Readonly<TypedEnv<SCHEMA>> => {
   const env = {} as TypedEnv<SCHEMA>;
   for (const key in schema) {
     const value = process.env[key as string];
