@@ -1,6 +1,11 @@
 {
-  "name": "typenv",
+  "name": "@edgarortega/typenv",
   "type": "module",
+  "version": "1.0.0-2024.09.15",
+  "author": {
+    "email": "edgarortegaramirez@gmail.com",
+    "name": "Edgar Ortega"
+  },
   "exports": {
     ".": {
       "import": "./src/index.ts",
