@@ -8,7 +8,7 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.ts",
+      "import": "./dist/index.js",
       "require": "./dist/index.js",
       "types": "./src/index.ts"
     }
