@@ -12,6 +12,7 @@ It enables developers to define, validate, and access environment variables in a
 
 ## Design Decisions
 
+- [KISS principle](https://en.wikipedia.org/wiki/KISS_principle)
 - Focused on JavaScript server environments.
 - No reliance on external schema validation libraries.
 - Does not support environment variable loading, nesting, grouping, or transformations.
