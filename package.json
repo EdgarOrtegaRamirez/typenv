@@ -1,10 +1,4 @@
 {
-  "name": "@edgarortega/typenv-root",
-  "type": "module",
-  "scripts": {
-    "check": "bunx biome check --write .",
-    "test": "bun test"
-  },
   "devDependencies": {
     "@biomejs/biome": "^1.9.0",
     "@types/bun": "latest"
@@ -14,5 +8,11 @@
   },
   "workspaces": ["packages/*"],
   "private": true,
-  "dependencies": {}
+  "scripts": {
+    "build": "bun run --filter '*' build",
+    "pack": "npm pack --workspaces",
+    "publish": "npm publish --workspaces",
+    "check": "bunx biome check --write .",
+    "test": "bun test"
+  }
 }
