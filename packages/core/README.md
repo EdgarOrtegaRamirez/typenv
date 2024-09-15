@@ -34,7 +34,13 @@ Here's how to use `typenv` in your project:
 
 ```ts
 // create a env.ts file in your root
-import { createEnv, asString, asEnum, asBoolean, asNumber } from "@edgarortega/typenv";
+import {
+  createEnv,
+  asString,
+  asEnum,
+  asBoolean,
+  asNumber,
+} from "@edgarortega/typenv";
 // Define your environment variables schema
 export const env = createEnv({
   URL: asString(), // Must be a string
@@ -76,18 +82,4 @@ Creates and validates environment variables based on the provided schema.
 
 If an environment variable is missing or invalid, `typenv` will throw a `TypenvError` with a descriptive message, helping you quickly identify configuration issues.
 
-## 📝 License
-
-This project is licensed under the X License. See the [LICENSE](LICENSE) file for details.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a pull request or open an issue.
-
-## 📞 Contact
-
-For any inquiries, open an issue in https://github.com/EdgarOrtegaRamirez/typenv
-
 ---
-
-Happy coding! 🎉
