@@ -1,5 +1,5 @@
 {
-  "name": "@typenv/root",
+  "name": "@edgarortega/typenv-root",
   "type": "module",
   "scripts": {
     "check": "bunx biome check --write .",

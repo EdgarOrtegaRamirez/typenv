@@ -14,12 +14,18 @@ export class TypenvError extends Error {
   }
 }
 
+type SchemaFunction<VALUE, RETURN> = (input: { key: string, value: VALUE }) => RETURN
+type StringSchema = SchemaFunction<string, string>
+type BooleanSchema = SchemaFunction<string, boolean>
+type NumberSchema = SchemaFunction<string, number>
+type EnumSchema<T> = SchemaFunction<T, T>
+
 /**
  * Validates and returns a string environment variable.
  * @returns {Function} A function that takes an object with key and value, returning the value.
  */
-export const asString = () => {
-  return ({ key, value }: { key: string; value: string }) => {
+export const asString = (): StringSchema => {
+  return ({ key, value }) => {
     return value;
   };
 };
@@ -32,9 +38,9 @@ export const asString = () => {
  * @returns {Function} A function that takes an object with key and value, returning the value if valid.
  * @throws {TypenvError} If the environment variable value is not one of the allowed values.
  */
-export const asEnum = <T extends string>({ values }: { values: T[] }) => {
-  return ({ key, value }: { key: string; value: string }) => {
-    if (!values.includes(value as T)) {
+export const asEnum = <T>({ values }: { values: T[] }): EnumSchema<T> => {
+  return ({ key, value }) => {
+    if (!values.includes(value)) {
       throw new TypenvError({
         key,
         message: `must be one of ${values.join('/')}`,
@@ -49,8 +55,8 @@ export const asEnum = <T extends string>({ values }: { values: T[] }) => {
  * @returns {Function} A function that takes an object with key and value, returning the boolean value.
  * @throws {TypenvError} If the environment variable is not a boolean.
  */
-export const asBoolean = () => {
-  return ({ key, value }: { key: string; value: string }) => {
+export const asBoolean = (): BooleanSchema => {
+  return ({ key, value }) => {
     value = value.toLowerCase();
     if (value !== 'true' && value !== 'false') {
       throw new TypenvError({ key, message: 'must be a boolean (true/false)' });
@@ -64,8 +70,8 @@ export const asBoolean = () => {
  * @returns {Function} A function that takes an object with key and value, returning the number value.
  * @throws {TypenvError} If the environment variable is not a number.
  */
-export const asNumber = () => {
-  return ({ key, value }: { key: string; value: string }) => {
+export const asNumber = (): NumberSchema => {
+  return ({ key, value }) => {
     const numValue = Number(value);
     if (Number.isNaN(numValue)) {
       throw new TypenvError({ key, message: 'must be a number' });
@@ -79,9 +85,8 @@ export const asNumber = () => {
  */
 type Schema = Record<
   string,
-  ReturnType<
-    typeof asString | typeof asEnum | typeof asBoolean | typeof asNumber
-  >
+  // biome-ignore lint/suspicious/noExplicitAny: allowedy-
+  StringSchema | EnumSchema<any> | NumberSchema | BooleanSchema
 >;
 
 /**
@@ -105,9 +110,7 @@ type TypedEnv<SCHEMA> = SCHEMA extends Record<string, unknown>
  * @returns {TypedEnv<SCHEMA>} An object containing the validated environment variables.
  * @throws {TypenvError} If any environment variable is not defined or invalid.
  */
-export const createEnv = <SCHEMA extends Schema>({
-  schema,
-}: { schema: SCHEMA }) => {
+export const createEnv = <SCHEMA extends Schema>(schema: SCHEMA): Readonly<TypedEnv<SCHEMA>> => {
   const env = {} as TypedEnv<SCHEMA>;
   for (const key in schema) {
     const value = process.env[key as string];

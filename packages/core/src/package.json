@@ -10,5 +10,5 @@
   },
   "devDependencies": {},
   "peerDependencies": {},
-  "private": true
+  "private": false
 }

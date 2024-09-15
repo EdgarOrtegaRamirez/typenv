@@ -1,24 +1,30 @@
 # 🛠️ typenv
 
-`typenv` is a lightweight TypeScript library for managing environment variables with type safety.
-This package is intended to be used in a JavaScript server environment.
-
-It allows you to define and validate environment variables in a structured way, ensuring that your application has the correct configuration.
+`typenv` is a lightweight TypeScript library designed for managing environment variables with type safety in JavaScript server environments.
+It enables developers to define, validate, and access environment variables in a structured manner, ensuring that applications are configured correctly.
 
 ## 🚀 Features
 
-- **Type Safety**: Leverage TypeScript to ensure your environment variables are of the expected types.
-- **Validation**: Automatically validate environment variables against defined schemas.
-- **zero dependencies**: making it efficient and easy to integrate into your projects.
-- **Custom Error Handling**: Get clear error messages when environment variables are missing or invalid.
+- **Type Safety**: Leverage TypeScript to enforce expected types for environment variables, reducing runtime errors.
+- **Validation**: Automatically validate environment variables against defined schemas, ensuring correctness.
+- **Zero Dependencies**: Efficient and easy to integrate into your projects without external libraries.
+- **Custom Error Handling**: Receive clear and descriptive error messages when environment variables are missing or invalid.
+
+## Design Decisions
+
+- Focused on JavaScript server environments.
+- No reliance on external schema validation libraries.
+- Does not support environment variable loading, nesting, grouping, or transformations.
+- No default values or optional environment variables.
+- Empty string variables (e.g., `AN_API_URL=` or `AN_API_URL=  `) are treated as `undefined`.
 
 ## 📦 Installation
 
-You can install `typenv` via npm:
+You can install `typenv` via:
 
 ```sh
-npm install typenv
-bun add typenv
+npm install --save @edgarortega/typenv
+bun add @edgarortega/typenv
 ```
 
 ## 📖 Usage
@@ -26,15 +32,14 @@ bun add typenv
 Here's how to use `typenv` in your project:
 
 ```ts
-import { createEnv, asString, asEnum, asBoolean, asNumber } from "typenv";
+// create a env.ts file in your root
+import { createEnv, asString, asEnum, asBoolean, asNumber } from "@edgarortega/typenv";
 // Define your environment variables schema
 export const env = createEnv({
-  schema: {
-    URL: asString(), // Must be a string
-    NODE_ENV: asEnum({ values: ["dev", "PROD"] as const }), // Must be one of the specified values
-    FEATURE_FLAG: asBoolean(), // Must be a boolean
-    MAX_RETRIES: asNumber(), // Must be a number
-  },
+  URL: asString(), // Must be a string
+  NODE_ENV: asEnum({ values: ["dev", "PROD"] as const }), // Must be one of the specified values
+  FEATURE_FLAG: asBoolean(), // Must be a boolean
+  MAX_RETRIES: asNumber(), // Must be a number
 });
 // inferred type for the `env` variable
 const env: {
@@ -62,18 +67,13 @@ Creates and validates environment variables based on the provided schema.
 ### Validation Functions
 
 - `asString()`: Validates and returns a string environment variable.
-- `asEnum(values: string[])`: Validates and returns an environment variable that must be one of the specified enum values.
+- `asEnum(values: string[] as const)`: Validates and returns an environment variable that must be one of the specified enum values.
 - `asBoolean()`: Validates and returns a boolean environment variable.
 - `asNumber()`: Validates and returns a number environment variable.
 
 ## ⚠️ Error Handling
 
 If an environment variable is missing or invalid, `typenv` will throw a `TypenvError` with a descriptive message, helping you quickly identify configuration issues.
-
-## ⚠️ Limitations
-
-This package does not support optional environment variables nor variables with default values.
-All variables defined in the schema must be defined.
 
 ## 📝 License
 
