@@ -6,12 +6,15 @@
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "private": true,
   "scripts": {
     "build": "bun run --filter '*' build",
     "prepublish": "bun run build",
     "publish": "npm publish --workspaces --access public",
+    "jsr:publish": "bunx jsr publish",
     "check": "bunx biome check --write .",
     "test": "bun run --filter '*' test"
   }

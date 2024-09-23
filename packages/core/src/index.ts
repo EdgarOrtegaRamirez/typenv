@@ -10,7 +10,7 @@ export class TypenvError extends Error {
    */
   constructor({ message, key }: { message: string; key: string }) {
     super(`Env var ${key} ${message}`);
-    this.name = 'TypenvError';
+    this.name = "TypenvError";
   }
 }
 
@@ -28,7 +28,7 @@ type EnumSchema<T> = SchemaFunction<T, T>;
  * @returns {Function} A function that takes an object with key and value, returning the value.
  */
 export const asString = (): StringSchema => {
-  return ({ key, value }) => {
+  return ({ value }) => {
     return value;
   };
 };
@@ -46,7 +46,7 @@ export const asEnum = <T>({ values }: { values: T[] }): EnumSchema<T> => {
     if (!values.includes(value)) {
       throw new TypenvError({
         key,
-        message: `must be one of ${values.join('/')}`,
+        message: `must be one of ${values.join("/")}`,
       });
     }
     return value;
@@ -61,10 +61,10 @@ export const asEnum = <T>({ values }: { values: T[] }): EnumSchema<T> => {
 export const asBoolean = (): BooleanSchema => {
   return ({ key, value }) => {
     value = value.toLowerCase();
-    if (value !== 'true' && value !== 'false') {
-      throw new TypenvError({ key, message: 'must be a boolean (true/false)' });
+    if (value !== "true" && value !== "false") {
+      throw new TypenvError({ key, message: "must be a boolean (true/false)" });
     }
-    return value === 'true';
+    return value === "true";
   };
 };
 
@@ -77,7 +77,7 @@ export const asNumber = (): NumberSchema => {
   return ({ key, value }) => {
     const numValue = Number(value);
     if (Number.isNaN(numValue)) {
-      throw new TypenvError({ key, message: 'must be a number' });
+      throw new TypenvError({ key, message: "must be a number" });
     }
     return numValue;
   };
@@ -114,13 +114,13 @@ type TypedEnv<SCHEMA> = SCHEMA extends Record<string, unknown>
  * @throws {TypenvError} If any environment variable is not defined or invalid.
  */
 export const createEnv = <SCHEMA extends Schema>(
-  schema: SCHEMA,
+  schema: SCHEMA
 ): Readonly<TypedEnv<SCHEMA>> => {
   const env = {} as TypedEnv<SCHEMA>;
   for (const key in schema) {
     const value = process.env[key as string];
-    if (value === undefined || value.trim() === '') {
-      throw new TypenvError({ key, message: 'is not defined' });
+    if (value === undefined || value.trim() === "") {
+      throw new TypenvError({ key, message: "is not defined" });
     }
     env[key] = schema[key]({ key, value }) as TypedEnv<SCHEMA>[typeof key];
   }
