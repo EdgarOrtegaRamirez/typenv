@@ -1,4 +1,4 @@
-name: Bun CI
+name: CI
 
 on:
   push:
@@ -10,18 +10,12 @@ jobs:
   test:
     name: Test
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        bun-version: ['1.0', '1.1', 'latest']
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: ${{ matrix.bun-version }}
 
       - name: Install dependencies
         run: bun install
@@ -38,8 +32,6 @@ jobs:
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
 
       - name: Install dependencies
         run: bun install
@@ -56,8 +48,6 @@ jobs:
 
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
 
       - name: Install dependencies
         run: bun install

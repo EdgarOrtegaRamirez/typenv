@@ -6,9 +6,7 @@
   "peerDependencies": {
     "typescript": "^5.0.0"
   },
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": ["packages/*"],
   "private": true,
   "scripts": {
     "build": "bun run --filter '*' build",
