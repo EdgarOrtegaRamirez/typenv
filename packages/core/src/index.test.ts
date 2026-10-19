@@ -73,5 +73,150 @@ describe('createEnv', () => {
         TEST_ENUM: asEnum({ values: ['option1', 'option2', 'option3'] }),
       }),
     ).toThrow(TypenvError);
+    // restore valid enum
+    process.env.TEST_ENUM = 'option1';
+  });
+
+  // --- MODERNIZATION TESTS ---
+
+  describe('Error Accumulation', () => {
+    test('should accumulate all validation errors and throw a consolidated TypenvError', () => {
+      let caughtError: TypenvError | null = null;
+      try {
+        createEnv(
+          {
+            PORT: asNumber(),
+            DB_HOST: asString(),
+            ENABLE_FEATURE: asBoolean(),
+          },
+          {
+            env: { PORT: 'not-a-number', DB_HOST: '', ENABLE_FEATURE: 'maybe' },
+          },
+        );
+      } catch (err) {
+        if (err instanceof TypenvError) {
+          caughtError = err;
+        }
+      }
+
+      expect(caughtError).not.toBeNull();
+      expect(caughtError?.errors.length).toBe(3);
+      expect(caughtError?.errors[0].key).toBe('PORT');
+      expect(caughtError?.errors[0].message).toBe('must be a number');
+      expect(caughtError?.errors[1].key).toBe('DB_HOST');
+      expect(caughtError?.errors[1].message).toBe('is not defined');
+      expect(caughtError?.errors[2].key).toBe('ENABLE_FEATURE');
+      expect(caughtError?.errors[2].message).toBe(
+        'must be a boolean (true/false)',
+      );
+    });
+  });
+
+  describe('Optional Fields', () => {
+    test('should allow optional fields to evaluate to undefined if not provided', () => {
+      const env = createEnv(
+        {
+          OPTIONAL_STR: asString({ optional: true }),
+          OPTIONAL_NUM: asNumber({ optional: true }),
+          OPTIONAL_BOOL: asBoolean({ optional: true }),
+          OPTIONAL_ENUM: asEnum({ values: ['x', 'y'], optional: true }),
+        },
+        { env: {} },
+      );
+
+      expect(env.OPTIONAL_STR).toBeUndefined();
+      expect(env.OPTIONAL_NUM).toBeUndefined();
+      expect(env.OPTIONAL_BOOL).toBeUndefined();
+      expect(env.OPTIONAL_ENUM).toBeUndefined();
+    });
+  });
+
+  describe('Default Fallbacks', () => {
+    test('should return default values if missing or empty', () => {
+      const env = createEnv(
+        {
+          PORT: asNumber({ default: 8080 }),
+          DB_HOST: asString({ default: 'localhost' }),
+          USE_SSL: asBoolean({ default: false }),
+          ENV_MODE: asEnum({ values: ['dev', 'prod'], default: 'dev' }),
+        },
+        { env: { PORT: '', DB_HOST: undefined, USE_SSL: '  ' } },
+      );
+
+      expect(env.PORT).toBe(8080);
+      expect(env.DB_HOST).toBe('localhost');
+      expect(env.USE_SSL).toBe(false);
+      expect(env.ENV_MODE).toBe('dev');
+    });
+  });
+
+  describe('Range and Pattern Constraints', () => {
+    test('should validate asNumber boundaries (min and max)', () => {
+      expect(() =>
+        createEnv(
+          {
+            PORT: asNumber({ min: 1024, max: 65535 }),
+          },
+          { env: { PORT: '80' } },
+        ),
+      ).toThrow();
+
+      expect(() =>
+        createEnv(
+          {
+            PORT: asNumber({ min: 1024, max: 65535 }),
+          },
+          { env: { PORT: '70000' } },
+        ),
+      ).toThrow();
+
+      const env = createEnv(
+        {
+          PORT: asNumber({ min: 1024, max: 65535 }),
+        },
+        { env: { PORT: '3000' } },
+      );
+      expect(env.PORT).toBe(3000);
+    });
+
+    test('should validate asString regex pattern matching', () => {
+      expect(() =>
+        createEnv(
+          {
+            API_VERSION: asString({ pattern: /^v[0-9]+$/ }),
+          },
+          { env: { API_VERSION: 'version1' } },
+        ),
+      ).toThrow();
+
+      const env = createEnv(
+        {
+          API_VERSION: asString({ pattern: /^v[0-9]+$/ }),
+        },
+        { env: { API_VERSION: 'v2' } },
+      );
+      expect(env.API_VERSION).toBe('v2');
+    });
+  });
+
+  describe('Edge-Native Custom Env Source override', () => {
+    test('should resolve from custom env parameter and bypass process.env', () => {
+      const customEnvSource = {
+        APP_TITLE: 'CustomEdgeApp',
+        APP_THREADS: '8',
+      };
+
+      const env = createEnv(
+        {
+          APP_TITLE: asString(),
+          APP_THREADS: asNumber(),
+        },
+        { env: customEnvSource },
+      );
+
+      expect(env.APP_TITLE).toBe('CustomEdgeApp');
+      expect(env.APP_THREADS).toBe(8);
+      expect(process.env.APP_TITLE).toBeUndefined();
+    });
   });
 });
